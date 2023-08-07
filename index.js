@@ -1,4 +1,4 @@
-const { createDirectus, rest, authentication, readMe, readItems, updateItem, deleteItems, uploadFiles, readFiles } = require('@directus/sdk')
+const { createDirectus, rest, authentication, readMe, readItems, updateItem, deleteItems, uploadFiles, readFiles, createItem } = require('@directus/sdk')
 const { default: fetch } = require('node-fetch')
 const { readFile } = require('fs/promises')
 const FormData = require('form-data');
@@ -64,6 +64,7 @@ module.exports = class DirectusConnector {
       collection: 'silex',
       singleSiteMode: false,
       assetsLocalFolder: null,
+      useHistory: true,
       ...opts,
     }
   }
@@ -262,7 +263,14 @@ module.exports = class DirectusConnector {
         throw err
       }
       const id = websites[0].id
-      const website = await client.request(updateItem(this.options.collection, id, data))
+      const website = await client.request(
+        this.options.useHistory
+        ? updateItem(this.options.collection, id, data)
+        : createItem(this.options.collection, {
+          ...data,
+          website_id: websiteId,
+        })
+      )
       //const fields = Object.keys(data)
       //const website = await client.request(updateItem(this.options.collection, { filter: { website_id: websiteId }, sort: ['-id'], limit: 1, fields }, data))
       return website.website_id
