@@ -1,6 +1,6 @@
 {
   "name": "@silexlabs/silex-directus-storage",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Directus storage connector for Silex website builder",
   "main": "index.js",
   "scripts": {
