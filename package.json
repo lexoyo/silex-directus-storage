@@ -1,0 +1,35 @@
+{
+  "name": "silex-directus-storage",
+  "version": "0.0.0",
+  "description": "Directus storage connector for Silex website builder",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "silex --config `pwd`/.silex.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lexoyo/silex-directus-storage.git"
+  },
+  "keywords": [
+    "silex",
+    "plugin",
+    "foss"
+  ],
+  "author": "lexoyo",
+  "license": "AGPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/lexoyo/silex-directus-storage/issues"
+  },
+  "homepage": "https://github.com/lexoyo/silex-directus-storage#readme",
+  "devDependencies": {
+    "@silexlabs/silex": "^3.0.0-alpha.71"
+  },
+  "dependencies": {
+    "@directus/sdk": "^11.0.1",
+    "axios": "^1.4.0",
+    "form-data": "^4.0.0",
+    "mime": "^3.0.0",
+    "node-fetch": "^2.6.12"
+  }
+}
