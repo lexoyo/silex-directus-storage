@@ -152,7 +152,11 @@ module.exports = class DirectusConnector {
 
   //getUser(session: Session): Promise<ConnectorUser | null>
   async getUser(session) {
-    if(!this.isLoggedIn(session)) throw new Error('Not logged in')
+    if(!this.isLoggedIn(session)) {
+      const err = new Error('Not logged in')
+      err.httpStatusCode = 401
+      throw err
+    }
     try {
       const client = this.getClient(session)
       await client.login(session.directus.username, session.directus.password)
@@ -176,7 +180,9 @@ module.exports = class DirectusConnector {
       }
     } catch (e) {
       console.error('Error getting directus user', e)
-      throw e
+      const err = new Error(`Error getting directus user: ${e.message}`)
+      err.httpStatusCode = 401
+      throw err
     }
   }
 
@@ -216,7 +222,7 @@ module.exports = class DirectusConnector {
       const websites = await client.request(readItems(this.options.collection, { filter: { website_id: websiteId }, sort: ['-id'], limit: 1 }))
       if(!websites || !websites.length) {
         const err = new Error('Website not found')
-        err.statusCode = 404
+        err.httpStatusCode = 404
         throw err
       }
       const website = websites[0]
@@ -258,7 +264,7 @@ module.exports = class DirectusConnector {
       const websites = await client.request(readItems(this.options.collection, { filter: { website_id: websiteId }, sort: ['-id'], limit: 1, fields: ['id'] }))
       if(!websites || !websites.length) {
         const err = new Error('Website not found')
-        err.statusCode = 404
+        err.httpStatusCode = 404
         throw err
       }
       const id = websites[0].id
@@ -318,7 +324,7 @@ module.exports = class DirectusConnector {
         return [json.data.filename_disk]
       } else {
         const err = new Error(`Error writing directus assets: ${response.statusText}`)
-        err.statusCode = response.status
+        err.httpStatusCode = response.status
         throw err
       }
     } catch (e) {
@@ -344,7 +350,7 @@ module.exports = class DirectusConnector {
           return buf
         } else {
           const err = new Error(`Error reading directus asset: ${response.statusText}`)
-          err.statusCode = response.status
+          err.httpStatusCode = response.status
           throw err
         }
       }
@@ -375,7 +381,7 @@ module.exports = class DirectusConnector {
       const websites = await client.request(readItems(this.options.collection, { filter: { website_id: websiteId }, sort: ['-id'], limit: 1 }, fields))
       if(!websites || !websites.length) {
         const err = new Error('Website not found')
-        err.statusCode = 404
+        err.httpStatusCode = 404
         throw err
       }
       const website = websites[0]

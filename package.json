@@ -4,7 +4,7 @@
   "description": "Directus storage connector for Silex website builder",
   "main": "index.js",
   "scripts": {
-    "start": "silex --config `pwd`/.silex.js"
+    "start": "silex --config `pwd`/.silex.js --client-config `pwd`/.silex-client.js"
   },
   "repository": {
     "type": "git",
