@@ -139,7 +139,7 @@ module.exports = class DirectusConnector {
     <form action="${redirectTo}" method="POST">
       <h1>Sign In</h1>
       <p>Use your directus credentials to sign in</p>
-      ${this.options.directusUrl ? '' : `<input type="url" name="host" placeholder="Host" />` }
+      ${ this.options.directusUrl ? '' : `<input type="url" name="host" placeholder="Host" />` }
       <input type="text" name="username" placeholder="Email" />
       <input type="password" name="password" placeholder="Password" />
       <footer>
