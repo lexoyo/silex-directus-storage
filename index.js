@@ -62,7 +62,6 @@ module.exports = class DirectusConnector {
   constructor(config, opts) {
     this.options = {
       collection: 'silex',
-      singleSiteMode: false,
       assetsLocalFolder: null,
       useHistory: true,
       ...opts,
@@ -177,7 +176,7 @@ module.exports = class DirectusConnector {
       }
     } catch (e) {
       console.error('Error getting directus user', e)
-      return null
+      throw e
     }
   }
 
