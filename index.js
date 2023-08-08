@@ -64,13 +64,14 @@ module.exports = class DirectusConnector {
       collection: 'silex',
       assetsLocalFolder: null,
       useHistory: true,
+      directusUrl: null,
       ...opts,
     }
   }
 
   // Get the SDK client
   getClient(session) {
-    return createDirectus(session.directus.host).with(rest()).with(authentication('json'))
+    return createDirectus(this.options.directusUrl ?? session.directus.host).with(rest()).with(authentication('json'))
   }
 
   // Get the URL to start the authentication process with OAuth (not used for basic auth)
@@ -83,37 +84,52 @@ module.exports = class DirectusConnector {
     return `
     <style>
       body {
-        background: #2B1B63;
+        background: #8866ff;
         color: #FFFFFF;
         font-family: sans-serif;
+        margin: 0;
+      }
+      h1, p {
+        padding: 10px;
+        margin: 0;
       }
       form {
         display: flex;
         flex-direction: column;
-        align-items: center;
         justify-content: center;
         height: 100vh;
+        background: #0d1117;
+        max-width: 400px;
+        padding: 80px;
+        box-shadow: 0 0 40px #263238;
+      }
+      input, button {
+        min-height: 52px;
       }
       input {
         padding: 10px;
         margin: 10px;
         border-radius: 5px;
-        border: 1px solid #FFFFFF;
+        border: 1px solid #30363d;
         background: transparent;
         color: #FFFFFF;
         font-size: 16px;
-        width: 300px;
+      }
+      input:focus {
+        outline: none;
+        border: 1px solid #8866ff;
       }
       button {
         padding: 10px;
         margin: 10px;
         border-radius: 5px;
-        border: 1px solid #FFFFFF;
-        background: transparent;
-        color: #FFFFFF;
+        border: none;
+        background: #8866ff;
+        color: black;
         font-size: 16px;
-        width: 300px;
+        width: 154px;
         cursor: pointer;
+        font-weight: bold;
       }
       button:hover {
         background: #FFFFFF;
@@ -121,11 +137,14 @@ module.exports = class DirectusConnector {
       }
     </style>
     <form action="${redirectTo}" method="POST">
-      <h1>Directus Login</h1>
-      <input type="url" name="host" placeholder="Host" />
-      <input type="text" name="username" placeholder="Username" />
+      <h1>Sign In</h1>
+      <p>Use your directus credentials to sign in</p>
+      ${this.options.directusUrl ? '' : `<input type="url" name="host" placeholder="Host" />` }
+      <input type="text" name="username" placeholder="Email" />
       <input type="password" name="password" placeholder="Password" />
-      <button type="submit">Login</button>
+      <footer>
+        <button type="submit">Sign In</button>
+      </footer>
     </form>
     `
   }
@@ -192,7 +211,7 @@ module.exports = class DirectusConnector {
   //getOptions(formData: object): ConnectorOptions
   getOptions(formData) {
     return {
-      host: formData.host.replace(/\/$/, ''),
+      host: formData.host?.replace(/\/$/, ''),
       username: formData.username,
       password: formData.password,
     }
@@ -307,7 +326,7 @@ module.exports = class DirectusConnector {
       const file = files[0]
       const data = new FormData();
       data.append('file', file.content, file.path.replace(/^\//, ''));
-      const url = `${session.directus.host}/files`
+      const url = `${this.options.directusUrl ?? session.directus.host}/files`
       const response = await fetch(url, {
         "credentials": "include",
         "headers": {
@@ -343,7 +362,7 @@ module.exports = class DirectusConnector {
       } else {
         const client = this.getClient(session)
         await client.login(session.directus.username, session.directus.password)
-        const url = `${session.directus.host}/assets/${fileName.replace(/^\//, '')}?download`
+        const url = `${this.options.directusUrl ?? session.directus.host}/assets/${fileName.replace(/^\//, '')}?download`
         const response = await fetch(url, { headers: { Authorization: `Bearer ${await client.getToken()}` } })
         if(response.ok) {
           const buf = await response.buffer()
