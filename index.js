@@ -2,6 +2,7 @@ const { createDirectus, rest, authentication, readMe, readItems, updateItem, del
 const { default: fetch } = require('node-fetch')
 const { readFile } = require('fs/promises')
 const FormData = require('form-data');
+const path = require('path');
 
 /**
  * Directus connector
@@ -321,31 +322,35 @@ module.exports = class DirectusConnector {
     if(!this.isLoggedIn(session)) throw new Error('Not logged in')
     if(files.length !== 1) throw new Error('Only one file at a time is supported')
     try {
-      const client = this.getClient(session)
-      await client.login(session.directus.username, session.directus.password)
-      const file = files[0]
-      const data = new FormData();
-      data.append('file', file.content, file.path.replace(/^\//, ''));
-      const url = `${this.options.directusUrl ?? session.directus.host}/files`
-      const response = await fetch(url, {
-        "credentials": "include",
-        "headers": {
-          "Accept": "application/json",
-          "Authorization": `Bearer ${await client.getToken()}`,
-          ...data.getHeaders(),
-        },
-        body: data,
-        "method": "POST",
-        "mode": "cors"
-      });
-      if (response.ok) {
-        const json = await response.json()
-        return [json.data.filename_disk]
-      } else {
-        const err = new Error(`Error writing directus assets: ${response.statusText}`)
-        err.httpStatusCode = response.status
-        throw err
+      const result = []
+      for(const file of files) {
+        const client = this.getClient(session)
+        await client.login(session.directus.username, session.directus.password)
+        const file = files[0]
+        const data = new FormData();
+        data.append('file', file.content, file.path.replace(/^\//, ''));
+        const url = `${this.options.directusUrl ?? session.directus.host}/files`
+        const response = await fetch(url, {
+          "credentials": "include",
+          "headers": {
+            "Accept": "application/json",
+            "Authorization": `Bearer ${await client.getToken()}`,
+            ...data.getHeaders(),
+          },
+          body: data,
+          "method": "POST",
+          "mode": "cors"
+        });
+        if (response.ok) {
+          const json = await response.json()
+          result.push(json.data.filename_disk)
+        } else {
+          const err = new Error(`Error writing directus assets: ${response.statusText}`)
+          err.httpStatusCode = response.status
+          throw err
+        }
       }
+      return result
     } catch (e) {
       console.error('Error writing directus assets', e)
       throw e
