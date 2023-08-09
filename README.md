@@ -53,9 +53,6 @@ User website is saved in a directus collection:
 4. **Open Silex and use it with Directus**
   Go to http://localhost:6805 and click "login with Directus"
 
-
-Certainly! Here's a refined version:
-
 ## **Configuration Options for Directus Connector**
 
 These options allow you to tailor the Directus connector to best fit your workflow with Silex.
