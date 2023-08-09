@@ -1,6 +1,7 @@
 # Directus plugin for Silex website builder
 
 > This code is part of a bigger project: [Silex v3](https://www.silex.me/) which aims to be a free/libre alternative to webflow
+>
 > For bugs and support please [start a discussion here](https://community.silex.me)
 
 This plugin is a connector to integrate Silex with Directus, enabling users to store their websites and assets in their Directus account.
